@@ -22,7 +22,8 @@ View options:
     // Available render engines are twig and php
     'render' => 'twig',
     
-    // The following optional paramenters are the default files to be used for each category (without the extension)
+    // The following optional paramenters are the default files to be used for
+	// each category (without the extension)
     'layout' => 'layout',
     '404' => '404',
     'exception' => 'error',
