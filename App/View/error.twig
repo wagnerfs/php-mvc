@@ -1,0 +1,14 @@
+{% set headTitle = 'Fatal error' %}
+{% block content %}
+    <p>Uncaught exception: '{{ class }}'</p>
+    <p>Message: '{{ exception.getMessage() }}'</p>
+    <p>
+        Stack trace:
+        <ol class="trace">
+            {% for row in stack %}
+                <li>{% if row.line is defined %}{{ row.file }}({{ row.line }}): {% endif %}{{ row.args }})</li>
+            {% endfor %}
+        </ol>
+    </p>
+    <p>Thrown in '{{ exception.getFile() }}' on line {{ exception.getLine() }}</p>
+{% endblock %}

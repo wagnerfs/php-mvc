@@ -1,0 +1,19 @@
+{% set headTitle = 'Test list' %}
+{% block content %}
+    {% if error is defined %}
+        <p style="color: red">Could not insert data.</p>
+    {% endif %}
+    Listing tests<br>
+    <br>
+    {% for test in tests %}
+        {{ test.id }}. "{{ test.name }}" <a href="/test/delete/{{ test.id }}">Delete</a><br>
+    {% endfor %}
+    <br>
+    <br>
+    Insert new test:
+    <form action="/test/insert" method="post">
+        Name <input type="text" name="name" />
+        <button type="submit">Insert</button>
+    </form>
+    <a href="/home">Return to home</a>
+{% endblock %}

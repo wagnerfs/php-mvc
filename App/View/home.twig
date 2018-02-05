@@ -1,0 +1,8 @@
+{% set headTitle = 'Home' %}
+{% block content %}
+    <a href="/number/{{ random() }}">Check the /number/{number} route.</a><br>
+    <a href="/test/list">Check database test routes.</a><br>
+    <a href="/nonExistent">Check the 404 page.</a><br>
+    <a href="/session">Check the session test page.</a><br>
+    <a href="/config">Check config file access and custom template page.</a><br>
+{% endblock %}

@@ -1,0 +1,8 @@
+
+nbproject/
+
+config/autoload/local\.php
+
+vendor/
+
+composer\.lock
