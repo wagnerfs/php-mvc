@@ -6,6 +6,7 @@ class CoreExtensions extends \Twig_Extension
 {
     public function getFunctions()
     {
+        return [];
     }
     
     public function getFilters()
