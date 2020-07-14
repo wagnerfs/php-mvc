@@ -80,22 +80,7 @@ class Select
         $where_ = '';
         if (count($this->where) > 0)
         {
-            $list = [];
-            foreach ($this->where as $key => $val)
-            {
-                if (is_numeric($key))
-                {
-                    $list[] = $val;
-                }
-                else if (gettype($val) == 'array' && count($val) > 0)
-                {
-                    $list[] = $key.' in ('.(gettype($val[0]) == 'string' ? '\''.implode('\', \'', $val).'\'' : implode(', ', $val)).')';
-                }
-                else
-                {
-                    $list[] = $key.' = '.(gettype($val) == 'string' ? '\''.$val.'\'' : $val + 0);
-                }
-            }
+            $list = Select::adjustParams($this->where);
             if (count($list) > 0)
             {
                 $where_ = ' WHERE '.implode(' and ', $list);
@@ -121,5 +106,57 @@ class Select
         }
         
         $this->sql = ' FROM '.$this->table.$join_.$where_.$group_.$order_.$limit_;
+    }
+    
+    public static function adjustParams(array $params)
+    {
+        $list = [];
+        foreach ($params as $key => $val)
+        {
+            if (is_numeric($key))
+            {
+                $list[] = $val;
+            }
+            else
+            {
+                switch (gettype($val))
+                {
+                    case 'array':
+                    {
+                        if (gettype($val[0]) == 'string')
+                        {
+                            $list[] = $key . ' in (\'' . implode('\', \'', $val) . '\'';
+                        }
+                        else
+                        {
+                            $list[] = $key . ' in (' . implode(', ', $val);
+                        }
+                        break;
+                    }
+                    case 'boolean':
+                    {
+                        $list[] = $key.' = '.($val ? 'true' : 'false');
+                        break;
+                    }
+                    case 'NULL':
+                    {
+                        $list[] = $key.' = null';
+                        break;
+                    }
+                    case 'string':
+                    {
+                        $list[] = $key.' = \''.$val.'\'';
+                        break;
+                    }
+                    default:
+                    {
+                        $list[] = $key.' = '.($val + 0);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return $list;
     }
 }

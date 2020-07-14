@@ -21,22 +21,7 @@ class TableManager
         $params_ = '';
         if (count($params) > 0)
         {
-            $list = [];
-            foreach ($params as $key => $val)
-            {
-                if (is_numeric($key))
-                {
-                    $list[] = $val;
-                }
-                else if ($val === null)
-                {
-                    $list[] = $key.' = null';
-                }
-                else
-                {
-                    $list[] = $key.' = '.(gettype($val) == 'string' ? '\''.$val.'\'' : $val + 0);
-                }
-            }
+            $list = Select::adjustParams($params);
             if (count($list) > 0)
             {
                 $params_ = implode(', ', $list);
@@ -46,22 +31,7 @@ class TableManager
         $where_ = '';
         if (count($where) > 0)
         {
-            $list = [];
-            foreach ($where as $key => $val)
-            {
-                if (is_numeric($key))
-                {
-                    $list[] = $val;
-                }
-                else if (gettype($val) == 'array' && count($val) > 0)
-                {
-                    $list[] = $key.' in ('.(gettype($val[0]) == 'string' ? '\''.implode('\', \'', $val).'\'' : implode(', ', $val)).')';
-                }
-                else
-                {
-                    $list[] = $key.' = '.(gettype($val) == 'string' ? '\''.$val.'\'' : $val + 0);
-                }
-            }
+            $list = Select::adjustParams($where);
             if (count($list) > 0)
             {
                 $where_ = implode(' and ', $list);
@@ -79,22 +49,7 @@ class TableManager
         $where_ = '';
         if (count($where) > 0)
         {
-            $list = [];
-            foreach ($where as $key => $val)
-            {
-                if (is_numeric($key))
-                {
-                    $list[] = $val;
-                }
-                else if (gettype($val) == 'array' && count($val) > 0)
-                {
-                    $list[] = $key.' in ('.(gettype($val[0]) == 'string' ? '\''.implode('\', \'', $val).'\'' : implode(', ', $val)).')';
-                }
-                else
-                {
-                    $list[] = $key.' = '.(gettype($val) == 'string' ? '\''.$val.'\'' : $val + 0);
-                }
-            }
+            $list = Select::adjustParams($where);
             if (count($list) > 0)
             {
                 $where_ = implode(' and ', $list);
@@ -113,19 +68,14 @@ class TableManager
         $values_ = '';
         if (count($params) > 0)
         {
+            $list = Select::adjustParams($params);
             $columns = [];
             $values = [];
-            foreach ($params as $key => $val)
+            foreach ($list as $val)
             {
-                $columns[] = $key;
-                if ($val === null)
-                {
-                    $values[] = 'null';
-                }
-                else
-                {
-                    $values[] = (gettype($val) == 'string' ? '\''.$val.'\'' : $val + 0);
-                }
+                $pair = explode(' = ', $val);
+                $columns[] = $pair[0];
+                $values[] = $pair[1];
             }
             $columns_ = implode(', ', $columns);
             $values_ = implode(', ', $values);
@@ -133,6 +83,13 @@ class TableManager
         
         $query = 'INSERT INTO '.$this->parent->getTableName().' ('.$columns_.') VALUES ('.$values_.')';
         $db->query($query);
+        
+        $sequence = $this->parent->getSequenceName();
+        if ($sequence != '')
+        {
+            return $db->lastInsertId($sequence);
+        }
+        
         return $db->lastInsertId();
     }
     
